@@ -1,0 +1,8 @@
+{
+    "presets": [
+        ["@babel/preset-env", {
+            "targets": "cover 99.5% in RU"
+        }],
+        "@babel/preset-react"
+    ]
+}
