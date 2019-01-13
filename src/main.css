@@ -1,3 +1,68 @@
-h1 {
-    color: green;
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial;
+}
+
+#info, #field {
+    background-color: #27242f;
+}
+
+#info {
+    position: absolute;
+    left: 50%;
+    margin-left: -204px; 
+    padding: 15px;
+    width: 408px; 
+    height: 50px; 
+    margin-top: 41px;
+    border-bottom: 1px solid black;
+    text-align: center;
+    color: white;
+}
+
+#field {
+    display: flex;
+    outline: 10px solid #27242f;
+    outline-offset: -1px;
+    flex-wrap: wrap;
+}
+
+#modal {
+    background-color: rgba(10, 9, 13, 0.9);
+}
+
+#title, #question, #options {
+    text-align: center;
+    color: #fff;
+}
+
+#title {
+    font-size: 45px;
+    margin-top: 40px;
+    margin-bottom: 50px;
+}
+
+#question {
+    font-size: 25px;
+    margin-bottom: 130px;
+}
+
+#options {
+    font-size: 30px;
+}
+
+#options i {
+    cursor: pointer;
+    margin: 15px;
+}
+
+i {
+    vertical-align: middle;
+}
+
+.fa-circle {
+    font-size: 0.7em;
 }
