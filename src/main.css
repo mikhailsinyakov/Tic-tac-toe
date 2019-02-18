@@ -23,6 +23,15 @@ body {
     color: white;
 }
 
+#field, #menu { 
+    margin-left: -195px; 
+    width: 390px; 
+    height: 390px; 
+    position: absolute;
+    left: 50%;
+    margin-top: 100px;
+}
+
 #field {
     display: flex;
     outline: 10px solid #27242f;
@@ -30,8 +39,18 @@ body {
     flex-wrap: wrap;
 }
 
-#modal {
+#menu {
     background-color: rgba(10, 9, 13, 0.9);
+}
+
+.cell { 
+    border: 1px solid #fff;
+    text-align: center;
+    color: #fff;
+    width: 130px;
+    height: 130px;
+    line-height: 104px;
+    font-size: 117px;
 }
 
 #title, #question, #options {

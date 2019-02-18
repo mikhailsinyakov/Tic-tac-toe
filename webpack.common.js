@@ -15,7 +15,6 @@ module.exports = {
     resolve: {
         alias: {
             '@components': __dirname + '/src/components',
-            '@utils': __dirname + '/src/utils',
             '@app': __dirname + '/app',
             '@lib': __dirname + '/src/lib'
         }

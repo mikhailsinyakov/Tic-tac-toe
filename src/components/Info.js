@@ -2,8 +2,8 @@ import React from 'react';
 
 export default function Info (props) {
 
-    const { turn, userSymbol } = props;
-    const turnMessage = turn == 'user' ? 'Ваш ход' : 'Ход соперника';
+    const { isPlaying, turn } = props;
+    const turnMessage = isPlaying ? turn == 'user' ? 'Ваш ход' : 'Ожидание хода соперника' : 'Меню';
 
     return (
         <div id="info">{turnMessage}</div>
