@@ -1,56 +1,95 @@
 import React from 'react';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import Header from '@components/Header';
+import Home from '@components/Home';
+import Stats from '@components/Stats';
+import NewGame from '@components/NewGame';
 import Game from '@components/Game';
-import Menu from '@components/Menu';
+import NotFound from '@components/NotFound';
 
 export default class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            isPlaying: false,
+            user: null,
             userSymbol: null,
             opponentSymbol: null,
             prevResult: null
         };
-        this.startGame = this.startGame.bind(this);
+
+        this.updateSymbols = this.updateSymbols.bind(this);
         this.stopGame = this.stopGame.bind(this);
+        this.getLocalStats = this.getLocalStats.bind(this);
+        this.updateLocalStats = this.updateLocalStats.bind(this);
     }
 
-    startGame(userSymbol) {
-        if (this.state.isPlaying) throw new Error('The game has already started');
-        if (userSymbol) this.setSymbols(userSymbol);
-        else this.swapSymbols();
-        this.setState({ isPlaying: true });
-    }
-
-    setSymbols(userSymbol) {
-        const symbols = ['×', '○'];
-        if (!symbols.includes(userSymbol)) throw new Error('You should use either "×" or "○" symbol');
-        const opponentSymbol = userSymbol == symbols[0] ? symbols[1] : symbols[0];
+    updateSymbols(userSymbol) {
+        const opponentSymbol = userSymbol == 'x' ? 'o' : 'x';
         this.setState({ userSymbol, opponentSymbol });
     }
 
-    swapSymbols() {
-        const { userSymbol, opponentSymbol } = this.state;
-        if (!userSymbol || !opponentSymbol) throw new Error('You can swap symbols only if they have been set earlier');
-        this.setState({ userSymbol: opponentSymbol, opponentSymbol: userSymbol });
-    }
-
     stopGame(result) {
-        if (this.state.isPlaying == false) throw new Error('The game is not playing yet');
         const possibleResults = ['Ничья', 'Вы выиграли!', 'Вы проиграли :('];
         if (!possibleResults.includes(result)) throw new Error('You should use one of the possible results');
-        this.setState({ isPlaying: false, prevResult: result });
+        this.setState({ prevResult: result });
+        this.updateLocalStats(result);
+    }
+
+    getLocalStats() {
+        const statsString = localStorage.getItem('stats');
+        if (!statsString) {
+            return { wins: 0, draws: 0, losses: 0 };
+        }
+        return JSON.parse(statsString);
+    }
+
+    updateLocalStats(result) {
+        const stats = this.getLocalStats();
+        if (result == 'Вы выиграли!') {
+            stats.wins++;
+        } else if (result == 'Ничья') {
+            stats.draws++;
+        } else {
+            stats.losses++;
+        }
+        const statsString = JSON.stringify(stats);
+        localStorage.setItem('stats', statsString);
     }
 
     render() {
-        const { startGame, stopGame, setSymbols, swapSymbols } = this;
-        const { isPlaying, userSymbol, opponentSymbol, prevResult } = this.state;
+        const { startGame, stopGame, updateSymbols, getLocalStats, updateLocalStats } = this;
+        const { user, userSymbol, opponentSymbol, prevResult } = this.state;
         return (
-            <>
-                <Game stopGame={stopGame} isPlaying={isPlaying}
-                        userSymbol={userSymbol} opponentSymbol={opponentSymbol} />
-                <Menu isPlaying={isPlaying} prevResult={prevResult} startGame={startGame} />
-            </>
+            <Router>
+                <>
+                    <Switch>
+                        <Route path='/game/'></Route>
+                        <Route component={Header}></Route>
+                    </Switch>
+                    <Switch>
+                        <Route path='/' exact render={() => <Home user={user} />}></Route>
+                        <Route path='/stats/' exact 
+                            render={() => <Stats user={user} getLocalStats={getLocalStats} />}>
+                        </Route>
+                        <Route 
+                            path='/new-game/:versus/' exact 
+                            render={({match}) => (
+                                <NewGame match={match} userSymbol={userSymbol} 
+                                    prevResult={prevResult} updateSymbols={updateSymbols} />
+                            )}>
+                        </Route>
+                        <Route 
+                            path='/game/:versus/' exact
+                            render={({match, location, history}) => (
+                                <Game match={match} location={location} history={history} 
+                                    userSymbol={userSymbol} opponentSymbol={opponentSymbol} 
+                                    stopGame={stopGame} />
+                            )}>
+                        </Route>
+                        <Route component={NotFound}></Route>
+                    </Switch>
+                </>
+            </Router>
         );
     }
 }

@@ -7,45 +7,35 @@ class GameBoard extends Matrix {
 
     findWinner(matchesToWin) {
         const values = this.getValues();
-        // Check, if there is more same symbols in row for all directions
-        const checkLines = (coords, symbol) => {
-            // For each possible direction: to right, to right bottom, to bottom, to left bottom
-            const possibleChanges = [[1, 0], [1, 1], [0, 1], [-1, 1]];
-            let found = false;
+        const lines = [
+            [[0, 0], [1, 0], [2, 0]],
+            [[0, 1], [1, 1], [2, 1]],
+            [[0, 2], [1, 2], [2, 2]],
+            [[0, 0], [0, 1], [0, 2]],
+            [[1, 0], [1, 1], [1, 2]],
+            [[2, 0], [2, 1], [2, 2]],
+            [[0, 0], [1, 1], [2, 2]],
+            [[2, 0], [1, 1], [0, 2]]
+        ];
 
-            for (const change of possibleChanges) {
-                const [ changeX, changeY ] = change;
-                let symbolsInRow = 0;
+        let winner = null;
 
-                let [ x, y ] = coords;
-                let isSameSymbol = true;
-
-                while (x >= 0 && y >= 0 && x < this.columns && y < this.rows && isSameSymbol) {
-                    isSameSymbol = values[y][x] == symbol;
-                    if (isSameSymbol) symbolsInRow++;
-                    x += changeX;
-                    y += changeY;
-                }
-
-                if (symbolsInRow >= matchesToWin) {
-                    found = true;
-                    break;
-                }
-            };
-
-            return found;
-        };
-
-        let winner = false;
         outerLoop:
-        for (const [y, row] of values.entries()) {
-            for (const [x, value] of row.entries()) {
-                if (value !== null) {
-                    const found = checkLines([x, y], value);
-                    if (found) {
-                        winner = value;
-                        break outerLoop;
-                    }
+        for (const lineCoords of lines) {
+            const symbols = {};
+
+            for (const coord of lineCoords) {
+                const [x, y] = coord;
+                const value = values[y][x];
+                if (value === null) continue;
+                if (!symbols[value]) {
+                    symbols[value] = 1;
+                } else {
+                    symbols[value]++;
+                }
+                if (symbols[value] >= matchesToWin) {
+                    winner = value;
+                    break outerLoop;
                 }
             }
         }

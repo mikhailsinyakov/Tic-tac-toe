@@ -39,10 +39,6 @@ body {
     flex-wrap: wrap;
 }
 
-#menu {
-    background-color: rgba(10, 9, 13, 0.9);
-}
-
 .cell { 
     border: 1px solid #fff;
     text-align: center;
@@ -53,27 +49,31 @@ body {
     font-size: 117px;
 }
 
-#title, #question, #options {
+#menu {
+    background-color: rgba(10, 9, 13, 0.9);
+}
+
+#menu h1, #menu h2, #menu .buttons {
     text-align: center;
     color: #fff;
 }
 
-#title {
+#menu h1 {
     font-size: 45px;
     margin-top: 40px;
     margin-bottom: 50px;
 }
 
-#question {
+#menu h2 {
     font-size: 25px;
     margin-bottom: 130px;
 }
 
-#options {
+#menu .buttons {
     font-size: 30px;
 }
 
-#options i {
+#menu .buttons i, #menu .buttons span {
     cursor: pointer;
     margin: 15px;
 }

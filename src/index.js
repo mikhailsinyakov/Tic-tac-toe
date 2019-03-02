@@ -10,6 +10,6 @@ document.body.insertBefore(root, script);
 
 ReactDOM.render(<App />, root);
 
-if (module.hot) module.hot.accept('./components/App.js', () => {
-    ReactDOM.render(<App />, root);
-});
+if (module.hot) {
+    module.hot.accept('./components/App.js', () => ReactDOM.render(<App />, root));
+}

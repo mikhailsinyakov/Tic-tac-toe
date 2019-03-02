@@ -1,7 +1,5 @@
 import React from 'react';
 import GameBoard from '@lib/GameBoard';
-import Info from '@components/Info';
-import Field from '@components/Field';
 import Cell from '@components/Cell';
 
 export default class Game extends React.Component {
@@ -14,17 +12,10 @@ export default class Game extends React.Component {
 
         this.state = {
             board: new GameBoard(this.cellsInField[1], this.cellsInField[0]),
-            turn: null
+            isUserTurn: this.props.userSymbol == 'x' ? true : false
         };
 
         this.makeTurn = this.makeTurn.bind(this);
-    }
-
-    initField() {
-        this.setState({
-            turn: this.props.userSymbol == '×' ? 'user' : 'comp',
-            board: new GameBoard(this.cellsInField[1], this.cellsInField[0])
-        });
     }
 
     makeCompTurn() {
@@ -36,38 +27,41 @@ export default class Game extends React.Component {
     }
 
     makeTurn(row, column, symbol) {
-        const symbols = ['×', '○'];
-        if (!symbols.includes(symbol)) throw new Error('You should use either "×" or "○" symbol');
+        const symbols = ['x', 'o'];
+        if (!symbols.includes(symbol)) throw new Error('You should use either "x" or "o" symbol');
         
-        const { state: { turn }, props: { stopGame, userSymbol, opponentSymbol, matchesToWin } } = this;
+        const { matchesToWin } = this;
+        const { isUserTurn } = this.state;
+        const { userSymbol, opponentSymbol, location, history, stopGame } = this.props;
 
         const board = GameBoard.copy(this.state.board);
         board.addValue(row, column, symbol);
         this.setState({ board });
         
-        const gameState = board.defineGameState(matchesToWin);
+        const gameState = board.defineGameState(matchesToWin, true);
         if (gameState.state == 'in process') {
-            this.setState({ turn: turn == 'user' ? 'comp' : 'user' });
+            this.setState({ isUserTurn: !isUserTurn });
         } else {
-            let result;
-            if (gameState.result == 'draw') result = 'Ничья';
-            if (gameState.winner == userSymbol) result = 'Вы выиграли!';
-            if (gameState.winner == opponentSymbol) result = 'Вы проиграли :(';
-            this.setState({ turn: null });
-            stopGame(result);
+            if (gameState.result == 'draw') stopGame('Ничья');
+            if (gameState.winner == userSymbol) stopGame('Вы выиграли!');
+            if (gameState.winner == opponentSymbol) stopGame('Вы проиграли :(');
+            
+            history.push(location.pathname.replace('game', 'new-game'));
         }
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        const gameStartPlaying = !prevProps.isPlaying && this.props.isPlaying;
-        const compGotTurn = prevState.turn != 'comp' && this.state.turn == 'comp';
+    componentDidMount() {
+        if (!this.state.isUserTurn) this.makeCompTurn();
+    }
 
-        if (gameStartPlaying) this.initField();
-        if (compGotTurn) this.makeCompTurn();
+    componentDidUpdate(prevProps, prevState) {
+        if (prevState.isUserTurn && !this.state.isUserTurn) this.makeCompTurn();
     }
 
     render() {
-        const { makeTurn, state: { board, turn }, props: { userSymbol, isPlaying } } = this;
+        const { makeTurn} = this;
+        const { board, isUserTurn } = this.state;
+        const { userSymbol, isPlaying } = this.props;
         const [ columns ] = this.cellsInField;
 
         const cells = [];
@@ -75,16 +69,15 @@ export default class Game extends React.Component {
         board.getValues().forEach((row, rowIndex) => {
             row.forEach((val, columnIndex) => {
                 cells.push(<Cell key={[rowIndex, columnIndex]} row={rowIndex} column={columnIndex} symbol={val} 
-                    userSymbol={userSymbol} turn={turn} makeTurn={makeTurn} />);
+                    userSymbol={userSymbol} isUserTurn={isUserTurn} makeTurn={makeTurn} />);
             });
         });
         
         return (
-            <>
-                <Info isPlaying={isPlaying} turn={turn}/>
-                <Field>{cells}</Field>
-            </>
-            
+            <main>
+                <div id="info">{isUserTurn ? 'Ваш ход' : 'Ожидание хода соперника'}</div>
+                <div id="field">{cells}</div>
+            </main>
         );
     }
 }

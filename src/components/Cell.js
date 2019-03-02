@@ -1,14 +1,23 @@
 import React from 'react';
+import SymbolIcon from '@components/SymbolIcon';
 
 export default function Cell(props) {
-    const { row, column, userSymbol, turn, makeTurn } = props;
+    const { row, column, symbol, userSymbol, isUserTurn, makeTurn } = props;
 
-    let symbol = null, onClick = null;
-    if (props.symbol) symbol = <i className={props.symbol == '×' ? 'fas fa-times' : 'far fa-circle'}></i>;
-    const style = { cursor: !symbol && turn == 'user' ? 'pointer' : 'default' };
-    if (!symbol && turn == 'user') onClick = () => makeTurn(row, column, userSymbol);
+    if (symbol) {
+        return (
+            <div className="cell" style={({ cursor: 'default' })}>
+                <SymbolIcon symbol={symbol}/>
+            </div>
+        );
+    }
+
+    if (!isUserTurn) {
+        return <div className="cell" style={({ cursor: 'default' })}></div>;
+    }
 
     return (
-        <div className="cell" style={style} onClick={onClick}>{symbol}</div>
+        <div className="cell" style={({ cursor: 'pointer' })} onClick={() => makeTurn(row, column, userSymbol)}>
+        </div>
     );
 }
