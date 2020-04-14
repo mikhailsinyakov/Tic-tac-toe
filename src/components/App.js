@@ -6,6 +6,7 @@ import Stats from '@components/Stats';
 import NewGame from '@components/NewGame';
 import Game from '@components/Game';
 import NotFound from '@components/NotFound';
+import '../main.css'
 
 export default class App extends React.Component {
     constructor(props) {
